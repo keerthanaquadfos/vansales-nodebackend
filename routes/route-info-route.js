@@ -6,13 +6,10 @@ const db= require('../model');
    db.VanUserRoute.belongsTo(db.Van,{foreignKey:"vanId"});
 
    db.UserAccount.hasMany(db.VanUserRoute,{foreignKey:'userId'});
-   db.VanUserRoute.belongsTo(db.UserAccount,{foreignKey:"userId"}); 
+   db.VanUserRoute.belongsTo(db.UserAccount,{foreignKey:"userId"});  
 
-   db.Shop.hasMany(db.VanUserRoute,{foreignKey:'shopId'});
-   db.VanUserRoute.belongsTo(db.Shop,{foreignKey:"shopId"});
-
-   db.Route.hasMany(db.VanUserRoute,{foreignKey:'shopId'});
-   db.VanUserRoute.belongsTo(db.Route,{foreignKey:"shopId"});
+   db.Route.hasMany(db.VanUserRoute,{foreignKey:'routeId'});
+   db.VanUserRoute.belongsTo(db.Route,{foreignKey:"routeId"});
     
    db.Company.hasMany(db.VanUserRoute,{foreignKey:'companyId'});
    db.VanUserRoute.belongsTo(db.Company,{foreignKey:"companyId"});
@@ -33,9 +30,10 @@ router.get('/company/:id',async(req,res)=>{
     try{   
      const {id} =req.params;  
      const details=await db.VanUserRoute.findAll({
+        where:{companyId:id},
         include:[ 
-            {model:db.Van, attributes: ['code','name']},
-            {model:db.Shop,include:[{model:db.Route, attributes: ['code','name']}], attributes: ['code','name'], where:{companyId:id}},
+            {model:db.Van, attributes: ['code','name']}, 
+            {model:db.Route, attributes: ['name']}, 
             {model:db.UserAccount, attributes: ['email','name']}            
         ]
     }) ;
@@ -55,8 +53,7 @@ router.get('/company/:id',async(req,res)=>{
      const details=await db.VanUserRoute.findAll({
         where:{userId:id},
         include:[ 
-            {model:db.Van, attributes: ['code','name']},
-            {model:db.Shop,include:[{model:db.Route, attributes: ['code','name']}], attributes: ['code','name']},
+            {model:db.Van, attributes: ['code','name']}, 
             {model:db.UserAccount, attributes: ['email','name']}            
         ]
     }) ;
@@ -103,9 +100,9 @@ router.post('/',async(req,res)=>{
  router.put('/:id',async(req,res)=>{
     try{ 
         const {id}=req.params;
-        const {shopId,companyId,userId,routeId,vanId}=req.body; 
+        const {companyId,userId,routeId,vanId}=req.body; 
         const details=await db.VanUserRoute.update({
-            shopId,companyId,userId,routeId,vanId
+            companyId,userId,routeId,vanId
         },{where:{id}});
         if(details)
             res.status(202).json({status:true,msg:'Data updated successfully!',value:details});

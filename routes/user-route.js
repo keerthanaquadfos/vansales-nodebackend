@@ -92,8 +92,9 @@ router.post('/',async(req,res)=>{
         
         const company = await db.Company.findOne({where:{id:companyId}});
         var users = await db.UserAccount.count({ col: 'id', where: { companyId: companyId } });
-         
-        if(company.maxUsers >= users){
+         console.clear();
+         console.log(company,users);
+        if((company.maxUsers+1) < users){
           return res.status(201).json({status:false,msg:'Already reached maximum allowed users, contact your provider!',value:null});
          }
         const details=await db.UserAccount.create({name, roleId,companyId,email,password, departmentId, designationId, active});

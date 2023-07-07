@@ -5,16 +5,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       routeId:{
         type: Sequelize.INTEGER
-      },
-      shopId:{
-        type: Sequelize.INTEGER
-      },
+      },      
       userId:{
         type: Sequelize.INTEGER
       },companyId:{
         type: Sequelize.INTEGER
       }
     });   
-
     return VanUserRoute;
   };

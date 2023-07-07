@@ -1,6 +1,7 @@
 const router = require('express').Router();    
 const db= require('../model'); 
 
+
 router.get('/',async(req,res)=>{
     try{    
     const details=await db.Department.findAll().catch((err)=>{
