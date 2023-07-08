@@ -40,7 +40,7 @@ module.exports = (sequelize, Sequelize) => {
       checkOutLong: {
         type: Sequelize.STRING,
         allowNull: true,
-      }  
+      }, 
     }); 
     return Attendance;
   };

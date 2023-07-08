@@ -103,7 +103,9 @@ router.post('/',async(req,res)=>{
         else
             return res.status(200).json({status:false,msg:'Failed to save data!',value:null})
     }catch(err){
-        console.log(err);
+        if (err.name === 'SequelizeUniqueConstraintError') { 
+          return res.status(403).json({status:false,msg, message: "Email already exists",value:err});
+        } 
         return res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
     }
  });
@@ -125,8 +127,10 @@ router.post('/',async(req,res)=>{
       else
           return res.status(200).json({status:false,msg:'Failed to save data!',value:null})
   }catch(err){
-      console.log(err);
-      return res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
+    if (err.name === 'SequelizeUniqueConstraintError') { 
+      return res.status(403).json({status:false,msg, message: "Email already exists",value:err});
+    } 
+    return res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
   }
 });
 

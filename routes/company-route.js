@@ -43,6 +43,10 @@ router.get('/:id',async(req,res)=>{
 router.post('/',async(req,res)=>{
     try{
         const {name,email,address,contact,maxUsers,provinceId,password}=req.body; 
+        const user = await db.UserAccount.findOne({where:{email:email}});
+        if(user){
+          return res.status(201).json({status:false,msg:'Email alreay taken, please choose a diffrent one',value:null});
+        }
         const details=await db.Company.create({name,email,address,contact,maxUsers,provinceId});
         if(details){
             const adminUser = {name:name,email:email,roleId:2,companyId:details.id,designationId:1,departmentId:1,active:true,password:password};
@@ -58,17 +62,26 @@ router.post('/',async(req,res)=>{
  router.put('/:id',async(req,res)=>{
     try{ 
         const {id}=req.params;
-        const {name,email,address,contact,maxUsers,provinceId}=req.body; 
+        const {name,oldEmail,email,address,contact,maxUsers,provinceId,password}=req.body;
+        const user =  await db.UserAccount.findOne({where:{companyId:id,email:oldEmail}});
+        console.log(user);
+        if(user!=null){ 
+            user.email = email;
+            user.password = password;
+            const details=await db.UserAccount.update({
+                email:email,password:password
+            },{where:{id:user.id}}); 
+        }
+        
         const details=await db.Company.update({
             name,email,address,contact,maxUsers,provinceId
-        },{where:{id}}).catch((err)=>{
-            res.status(404).json({status:false,msg:'Failed to update details!',value:err})
-        });
+        },{where:{id}});
         if(details)
             res.status(202).json({status:true,msg:'Data updated successfully!',value:details});
         else
             res.status(200).json({status:false,msg:'Failed to update data!',value:null})
     }catch(err){
+        console.log(err);
          res.status(500).json({status:false,msg:'Error occured while tring to update data!',value:err});
     }
  });

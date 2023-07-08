@@ -15,7 +15,23 @@ router.get('/',async(req,res)=>{
          res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
     }
 });
+router.get('/company/:id',async(req,res)=>{
+    try{   
+     const {id} =req.params;  
+     const details=await db.Category.findAll({
+        where:{
+            id:id
+        }         
+    });
 
+    if(details){
+         res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+    }else
+         res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+         res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+ });
 router.get('/:id',async(req,res)=>{
     try{   
      const {id} =req.params;  
@@ -35,8 +51,8 @@ router.get('/:id',async(req,res)=>{
  });
 router.post('/',async(req,res)=>{
     try{
-        const {name,code}=req.body; 
-        const details=await db.Category.create({name,code});
+        const {name,code,companyId}=req.body; 
+        const details=await db.Category.create({name,code,companyId});
         if(details)
             res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
         else
@@ -52,9 +68,7 @@ router.post('/',async(req,res)=>{
         const {name,code}=req.body; 
         const details=await db.Category.update({
             name,code
-        },{where:{id}}).catch((err)=>{
-            res.status(404).json({status:false,msg:'Failed to update details!',value:err})
-        });
+        },{where:{id}});
         if(details)
             res.status(202).json({status:true,msg:'Data updated successfully!',value:details});
         else
