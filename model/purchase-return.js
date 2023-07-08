@@ -6,6 +6,9 @@ module.exports = (sequelize, Sequelize) => {
       orderId: {
         type: Sequelize.INTEGER
         }, 
+        shopId: {
+          type: Sequelize.INTEGER
+          }, 
       returnDate: {
         type: Sequelize.STRING
       },
@@ -13,7 +16,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.BOOLEAN  // 1 pending, 2 accepted, 3 rejected
+        type: Sequelize.INTEGER  // 1 pending, 2 accepted, 3 rejected
       },
       remarks:{
         type: Sequelize.STRING

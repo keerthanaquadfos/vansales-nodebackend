@@ -133,6 +133,7 @@ router.post('/',async(req,res)=>{
  router.post('/authenticate',async (req,res)=>{
     try{
         const { email,password} =req.body;  
+        console.log(email,password)
         const userData=await db.UserAccount.findOne({
           include:[ {model:db.UserRole, attributes: ['name']}, {model:db.Company, attributes: ['name']}],
           where:{email:email,password:password,active:true}}) ;

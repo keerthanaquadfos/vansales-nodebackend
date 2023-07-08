@@ -13,18 +13,25 @@ db.PurchaseReturn.belongsTo(db.Order,{foreignKey:"orderId"});
 db.Product.hasMany(db.OrderDetail,{foreignKey:'productId'});
 db.OrderDetail.belongsTo(db.Product,{foreignKey:"productId"});
 
+db.Product.hasMany(db.ReturnItem,{foreignKey:'productId'});
+db.ReturnItem.belongsTo(db.Product,{foreignKey:"productId"});
+ 
+  
 db.Shop.hasMany(db.Order,{foreignKey:'shopId'});
 db.Order.belongsTo(db.Shop,{foreignKey:"shopId"});
+ 
+db.Shop.hasMany(db.PurchaseReturn,{foreignKey:'shopId'});
+db.PurchaseReturn.belongsTo(db.Shop,{foreignKey:"shopId"});
 
 router.get('/',async(req,res)=>{
     try{    
      const products=await db.PurchaseReturn.findAll({
              include:[
-                {model:db.OrderDetail, include:[ {model:db.Product, attributes: ['name']},
-                {model:db.Shop, attributes: ['name']},
+                {model:db.ReturnItem, include:[ {model:db.Product, attributes: ['name']},
+                ,
                 {model:db.Order, attributes: ['orderNo','orderDate']}],
-                attributes:['productId','orderdQty','deliverableQty','amount']},  
-            ],attributes:['id','ordeId','returnDate','amount','status']
+                attributes:['productId','qty','deliverableQty','amount']},  
+            ],attributes:['id','orderId','returnDate','amount','status']
              ,order:[['orderDate','DESC']]
          }).catch((err)=>{
              console.log(err); 
@@ -43,16 +50,11 @@ router.get('/company/:id',async(req,res)=>{
     try{    
      const products=await db.PurchaseReturn.findAll({
              include:[
-                {model:db.ReturnItem, include:[ {model:db.Product, attributes: ['name','qty']},
-                {model:db.Shop, attributes: ['name']},
-                {model:db.Order, attributes: ['orderNo','orderDate']}],
-                attributes:['productId','orderdQty','deliverableQty','amount']},  
-            ],attributes:['id','ordeId','returnDate','amount','status']
-             ,order:[['orderDate','DESC']]
-         }).catch((err)=>{
-             console.log(err); 
-     });
-     
+                {model:db.ReturnItem,  attributes:['productId','qty','price'],include:[ {model:db.Product, attributes: ['name']}]},
+                {model:db.Shop, attributes: ['name']}, 
+            ],attributes:['id','orderId','returnDate','amount','status']
+             ,order:[['returnDate','DESC']]
+         })  
     if(products)  
          res.status(200).json({status:true,msg:`${products.length} details found!`,value:products});
     else
@@ -64,8 +66,8 @@ router.get('/company/:id',async(req,res)=>{
 });
 router.post('/',async(req,res)=>{
     try{
-        const {companyId,orderId,returnDate,amount,status,returns}=req.body; 
-        const details=await db.PurchaseReturn.create({companyId,orderId,returnDate,amount,status});
+        const {companyId,shopId,orderId,returnDate,amount,status,returns}=req.body; 
+        const details=await db.PurchaseReturn.create({companyId,shopId,orderId,returnDate,amount,status});
         if(details){ 
             var array_copy = returns.map((element) => {  
                 return {productId:element.id, qty:element.qty, price:element.amount, purchaseReturnId:details.id};
@@ -85,9 +87,9 @@ router.post('/',async(req,res)=>{
  router.put('/:id',async(req,res)=>{
     try{ 
         const {id}=req.params;
-        const {ordeId,returnDate,amount,status,returns}=req.body;
+        const {ordeId,shopId,returnDate,amount,status,returns}=req.body;
         const details=await db.PurchaseReturn.update({
-            ordeId,returnDate,amount,status
+            ordeId,shopId,returnDate,amount,status
         },{where:{id}}).catch((err)=>{
             res.status(404).json({status:false,msg:'Failed to update details!',value:err})
         });
