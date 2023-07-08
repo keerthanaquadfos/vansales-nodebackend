@@ -14,6 +14,9 @@ const db= require('../model');
    db.Company.hasMany(db.VanUserRoute,{foreignKey:'companyId'});
    db.VanUserRoute.belongsTo(db.Company,{foreignKey:"companyId"});
 
+   db.Shop.hasMany(db.VanUserRoute,{foreignKey:'shopId'});
+   db.VanUserRoute.belongsTo(db.Shop,{foreignKey:"shopId"});
+
 router.get('/',async(req,res)=>{
     try{    
     const details=await db.VanUserRoute.findAll();
@@ -54,6 +57,8 @@ router.get('/company/:id',async(req,res)=>{
         where:{userId:id},
         include:[ 
             {model:db.Van, attributes: ['code','name']}, 
+            {model:db.Route, attributes: ['name']}, 
+            {model:db.Shop, attributes: ['code','name']}, 
             {model:db.UserAccount, attributes: ['email','name']}            
         ]
     }) ;
