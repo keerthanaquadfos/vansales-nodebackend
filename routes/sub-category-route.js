@@ -17,6 +17,27 @@ router.get('/',async(req,res)=>{
     }
 });
 
+
+router.get('/company/:id',async(req,res)=>{
+    try{   
+     const {id} =req.params;  
+     const details=await db.SubCategory.findOne({
+        where:{
+            companyId:id
+        }         
+    }).catch((err)=>{
+        console.log(err); 
+    });
+
+    if(details){
+         res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+    }else
+         res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+         res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+ });
+
 router.get('/:id',async(req,res)=>{
     try{   
      const {id} =req.params;  
