@@ -86,14 +86,14 @@ router.post('/',async(req,res)=>{
         const details=await db.Attendance.update({
            checkOut,checkOutTime,checkOutLat,checkOutLong,odmeterEnd
         },{where:{id}});
-        if(details)
+        if(details){
                 const attendance=await db.Attendance.findOne({
                     where:{
                         id:id
                     }         
                 }) ;
             res.status(201).json({status:true,msg:'Data saved successfully!',value:attendance});
-        else
+            }else
             res.status(200).json({status:false,msg:'Failed to save data!',value:null})
     }catch(err){
         console.log(err);
