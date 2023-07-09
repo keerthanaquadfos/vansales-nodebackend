@@ -60,7 +60,11 @@ router.get('/:id',async(req,res)=>{
      const details=await db.Shop.findAll({
         where:{
             companyId:id
-        }         
+        },
+        include:[ {model:db.Route, attributes: ['code','name']},
+        {model:db.Province, attributes: ['code','name']}, 
+        {model:db.Company, attributes: ['name']},
+        {model:db.BillType, attributes: ['name']}]  
     });
 
     if(details){
