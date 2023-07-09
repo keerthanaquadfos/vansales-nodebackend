@@ -70,9 +70,7 @@ router.get('/company/:id',async(req,res)=>{
         console.log(err);
          res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
     }
- });
-
-
+ }); 
 
 router.get('/:id',async(req,res)=>{
     try{   
