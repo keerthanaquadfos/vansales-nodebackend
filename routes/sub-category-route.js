@@ -21,10 +21,10 @@ router.get('/',async(req,res)=>{
 router.get('/company/:id',async(req,res)=>{
     try{   
      const {id} =req.params;  
-     const details=await db.SubCategory.findOne({
+     const details=await db.SubCategory.findAll({
         where:{
             companyId:id
-        }         
+        }  ,  include:[ {model:db.Category, attributes: ['name']}]       
     }).catch((err)=>{
         console.log(err); 
     });
@@ -59,8 +59,8 @@ router.get('/:id',async(req,res)=>{
  });
 router.post('/',async(req,res)=>{
     try{
-        const {name,code, categoryId}=req.body; 
-        const details=await db.SubCategory.create({name,code,categoryId});
+        const {name,code, categoryId, companyId}=req.body; 
+        const details=await db.SubCategory.create({name,code,categoryId,companyId});
         if(details)
             res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
         else
@@ -73,9 +73,9 @@ router.post('/',async(req,res)=>{
  router.put('/:id',async(req,res)=>{
     try{ 
         const {id}=req.params;
-        const {name,code,categoryId}=req.body; 
+        const {name,code,categoryId,companyId}=req.body; 
         const details=await db.SubCategory.update({
-            name,code,categoryId
+            name,code,categoryId,companyId
         },{where:{id}}).catch((err)=>{
             res.status(404).json({status:false,msg:'Failed to update details!',value:err})
         });
