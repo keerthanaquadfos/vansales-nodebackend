@@ -57,8 +57,7 @@ router.get('/company/:id',async(req,res)=>{
         where:{userId:id},
         include:[ 
             {model:db.Van, attributes: ['code','name']}, 
-            {model:db.Route, attributes: ['name']}, 
-            {model:db.Shop, attributes: ['code','name']}, 
+            {model:db.Route, attributes: ['name'],include:[{model:db.Shop,attributes:['name']}]}, 
             {model:db.UserAccount, attributes: ['email','name']}            
         ]
     }) ;
@@ -72,6 +71,9 @@ router.get('/company/:id',async(req,res)=>{
          res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
     }
  });
+
+
+
 router.get('/:id',async(req,res)=>{
     try{   
      const {id} =req.params;  
