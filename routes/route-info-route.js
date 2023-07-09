@@ -56,7 +56,7 @@ router.get('/company/:id',async(req,res)=>{
      const details=await db.VanUserRoute.findAll({
         where:{userId:id},
         include:[ 
-            {model:db.Van, attributes: ['code','name']}, 
+            {model:db.Van, attributes: ['code','name','id']}, 
             {model:db.Route, attributes: ['name'],include:[{model:db.Shop,attributes:['code','name','address','contact','email']}]}, 
             {model:db.UserAccount, attributes: ['email','name']}            
         ],attributes:['id']
