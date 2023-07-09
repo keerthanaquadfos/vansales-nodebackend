@@ -82,8 +82,10 @@ router.get('/:id',async(req,res)=>{
  });
 router.post('/',async(req,res)=>{
     try{
+       
         const {companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt}=req.body; 
-        const details=await db.Complaint.create({companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt});
+        const no = await db.Complaint.count({where: {companyId:companyId}});
+        const details=await db.Complaint.create({code:(no+1),companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt});
         if(details)
             res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
         else

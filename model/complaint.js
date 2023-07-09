@@ -1,5 +1,8 @@
 module.exports = (sequelize, Sequelize) => {
     const Complaint = sequelize.define("complaint", {
+      code:{
+        type: Sequelize.INTEGER
+      },
       complaintTypeId: {  
         type: Sequelize.INTEGER
       }, 

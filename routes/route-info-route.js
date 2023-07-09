@@ -57,9 +57,9 @@ router.get('/company/:id',async(req,res)=>{
         where:{userId:id},
         include:[ 
             {model:db.Van, attributes: ['code','name']}, 
-            {model:db.Route, attributes: ['name'],include:[{model:db.Shop,attributes:['name']}]}, 
+            {model:db.Route, attributes: ['name'],include:[{model:db.Shop,attributes:['code','name','address','contact','email']}]}, 
             {model:db.UserAccount, attributes: ['email','name']}            
-        ]
+        ],attributes:['id']
     }) ;
 
     if(details){
