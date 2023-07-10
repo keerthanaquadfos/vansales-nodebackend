@@ -11,6 +11,33 @@ db.VanStockRequest.belongsTo(db.Van,{foreignKey:"vanId"});
 db.UserAccount.hasMany(db.VanStockRequest,{foreignKey:'userId'});
 db.VanStockRequest.belongsTo(db.UserAccount,{foreignKey:"userId"});
 
+router.get('/product-stock/:id/:companyId',async(req,res)=>{
+    try{
+        const {id,companyId} = req.params;
+       
+        const query ='SELECT "vans"."id" as "vanId", "vanStockItems"."productName",'+
+        '"vanStockItems"."productId",SUM("vanStockItems"."qty") as "qty"'+
+        'FROM "vanStockRequests" LEFT JOIN "vanStockItems"'+
+        'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId"'+
+        'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId"'+
+        'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId"'+
+        'WHERE "vanStockRequests"."companyId" =  (:companyId) AND "useraccounts"."id"=  (:id)'+
+        'GROUP BY "vans"."id","vanStockItems"."productId",'+
+        '"vanStockItems"."productName","vanStockItems"."productId"';
+        const details = await db.sequelize.query(query ,{
+            replacements: {id: id, companyId:companyId},
+            type: db.sequelize.QueryTypes.SELECT
+        });
+        if(details){
+            res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+       }else
+            res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+        console.log(err);
+        res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+})
+
 router.get('/company/:id/:userId',async(req,res)=>{
     try{   
      const {id, userId} =req.params;  
@@ -18,10 +45,12 @@ router.get('/company/:id/:userId',async(req,res)=>{
         where:{
             companyId:id, userId:userId
         },
-        include:[{model:db.VanStockItem, attributes:['id','vanStockRequestId','productId','productName','requestedQty','qty','allotted','sold']},
+        include:[{model:db.VanStockItem, group: ['productId'], attributes:['id','vanStockRequestId','productId','productName','requestedQty', 
+        'qty','allotted','sold']},
     {model:db.Van, attributes:['code','name']},
     {model:db.UserAccount, attributes:['name','email']}],
-        attributes:['id','requestNo','allotted','companyId','userId','vanId']      
+        attributes:['id','requestNo','allotted','companyId','userId','vanId'] ,
+          
     }) ;
 
     if(details){
@@ -29,6 +58,7 @@ router.get('/company/:id/:userId',async(req,res)=>{
     }else
          res.status(200).json({status:false,msg:'No details found!',value:null})
     }catch(err){
+        console.log(err);
          res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
     }
  });
