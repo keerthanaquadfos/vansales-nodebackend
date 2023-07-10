@@ -122,7 +122,8 @@ router.post('/',async(req,res)=>{
         const result = await db.sequelize.transaction(async (t) => {
             const curItems = await db.VanStockItem.findAll({where:{vanStockRequestId:id}});   
             await db.VanStockRequest.update({allotted:3},{where:{id:id}});   
-            curItems.forEach(async e=>{   
+            const records = curItems.map(result => result.dataValues)
+            records.forEach(async e=>{   
                 console.log(e);
                 e.qty=e.requestedQty;       
                 await db.VanStockItem.update(e,{where:{id:e.id}}); 
