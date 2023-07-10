@@ -99,8 +99,32 @@ router.post('/',async(req,res)=>{
             if(stockItems.length < curItems.length)
                 await db.VanStockRequest.update({allotted:2},{where:{id:id}});
 
-            stockItems.forEach(async e=>{    
-                console.log(e);       
+            stockItems.forEach(async e=>{          
+                var res  = await db.VanStockItem.update(e,{where:{id:e.id}});
+                result.push(res);
+            });
+            return result;        
+        });  
+        if(result)
+        {
+            res.status(201).json({status:true,msg:'Data saved successfully!',value:1});
+        }else
+            res.status(200).json({status:false,msg:'Failed to save data!',value:null})
+    }catch(err){
+        console.log(err); 
+        res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
+    }
+ }); 
+
+ router.put('/accept-all/:id',async(req,res)=>{ 
+    try{  
+        const {id}=req.params;  
+        const result = await db.sequelize.transaction(async (t) => {
+            const curItems = await db.VanStockItem.findAll({where:{vanStockRequestId:id}});   
+            await db.VanStockRequest.update({allotted:3},{where:{id:id}});      
+            var result = [] ;  
+            curItems.forEach(async e=>{   
+                e.qty=e.requestedQty;       
                 var res  = await db.VanStockItem.update(e,{where:{id:e.id}});
                 result.push(res);
             });
