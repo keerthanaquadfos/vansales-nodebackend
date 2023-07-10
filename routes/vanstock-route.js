@@ -42,17 +42,41 @@ router.get('/',async(req,res)=>{
     }
  }); */ 
 
+ router.get('/company/:id/:userId',async(req,res)=>{
+    try{    
+        const {id,userId} =req.params;  
+        const details=await db.VanStock.findAll({
+        include:[  
+            {model:db.Product, attributes: ['id','code','name']}
+        ], 
+        where:{
+            companyId:id, userId: userId
+        },
+        attributes: [
+            [db.sequelize.fn("sum", db.sequelize.col("qty")), "qty"], 'id'
+        ], group:['vanStock.id','product.id']
+    });
+    if(details){
+        console.log(details); 
+         res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+    }else
+         res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+     console.log(err);
+         res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+});
  router.get('/company/:id',async(req,res)=>{
     try{    
         const {id} =req.params;  
         const details=await db.VanStock.findAll({
-        include:[ {model:db.Van, attributes: ['code','name']},
-        {model:db.UserAccount, attributes: ['id','name']},
-        {model:db.Product, attributes: ['code','name']}], 
-        where:{
-            companyId:id
-        }
-    });
+            include:[ {model:db.Van, attributes: ['code','name']},
+            {model:db.UserAccount, attributes: ['id','name']},
+            {model:db.Product, attributes: ['code','name']}], 
+            where:{
+                companyId:id
+            }
+        });
     if(details){
         console.log(details); 
          res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});

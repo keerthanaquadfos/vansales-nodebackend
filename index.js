@@ -45,6 +45,7 @@ const departmentRoute = require('./routes/department-route');
 const designationRoute = require('./routes/designation-route'); 
 const billTypeRoute = require('./routes/bill-type-route');
 const routeInfoRoute = require('./routes/route-info-route');  
+const stockRequestRoute = require('./routes/van-stock-request-route');  
 
 app.use('/api/v1/user', userRoute);  
 app.use('/api/v1/country', countryRoute); 
@@ -67,6 +68,7 @@ app.use('/api/v1/department', departmentRoute);
 app.use('/api/v1/designation', designationRoute); 
 app.use('/api/v1/billtype', billTypeRoute); 
 app.use('/api/v1/route-info', routeInfoRoute); 
+app.use('/api/v1/stock-request', stockRequestRoute); 
 
 const PORT=process.env.PORT||3000; 
 
