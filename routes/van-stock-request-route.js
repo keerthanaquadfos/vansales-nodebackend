@@ -68,7 +68,7 @@ router.post('/',async(req,res)=>{
         const {vanId, companyId, userId, stockItems}=req.body;  
         const result = await db.sequelize.transaction(async (t) => {
             const lastItem = await db.VanStockRequest.findOne({where:{companyId:companyId, userId:userId}, order: [ [ 'id', 'DESC' ]]});
-            const rNo =1;
+            var rNo =1;
             if(lastItem) rNo = (lastItem.requestNo+1);
             const inserted=await db.VanStockRequest.create({requestNo:rNo,vanId:vanId,companyId: companyId,userId: userId, allotted:1});
             var items = stockItems.map((e) => {  
