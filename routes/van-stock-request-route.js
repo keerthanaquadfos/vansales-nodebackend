@@ -58,7 +58,6 @@ router.post('/',async(req,res)=>{
         res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
     }
  }); 
-
  router.put('/',async(req,res)=>{ 
     try{
         const {id, stockItems}=req.body;  
@@ -66,8 +65,7 @@ router.post('/',async(req,res)=>{
             const curItems = await db.VanStockItem.findAll({where:{vanStockRequestId:id}});  
             var result = [] ;     
             if(stockItems.length == curItems.length)
-                await db.VanStockRequest.update({allotted:3},{where:{id:id}});
-            
+                await db.VanStockRequest.update({allotted:3},{where:{id:id}});            
             if(stockItems.length < curItems.length)
                 await db.VanStockRequest.update({allotted:2},{where:{id:id}});
 
