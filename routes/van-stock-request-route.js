@@ -125,7 +125,8 @@ router.post('/',async(req,res)=>{
             const records = curItems.map(result => result.dataValues)
             records.forEach(async e=>{   
                 console.log(e);
-                e.qty=e.requestedQty;       
+                e.qty=e.requestedQty;  
+                e.allotted = true;     
                 await db.VanStockItem.update(e,{where:{id:e.id}}); 
             });
             return 1;        
