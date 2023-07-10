@@ -43,7 +43,7 @@ router.get('/company/:id/:userId',async(req,res)=>{
      const {id, userId} =req.params;  
      const details=await db.VanStockRequest.findAll({
         where:{
-            companyId:id, userId:userId
+            companyId:id, userId:userId,sold:false
         },
         include:[{model:db.VanStockItem, group: ['productId'], attributes:['id','vanStockRequestId','productId','productName','requestedQty', 
         'qty','allotted','sold']},
