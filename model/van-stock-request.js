@@ -14,6 +14,10 @@ module.exports = (sequelize, Sequelize) => {
       },
       allotted:{
         type: Sequelize.INTEGER  //1=PENDING , 2 = PARTIALLY , 3 = ALLOTTED
+      },
+      sold:{
+        defaultValue: false, 
+        type:Sequelize.BOOLEAN
       }
     }); 
     return VanStockRequest;

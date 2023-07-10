@@ -68,26 +68,28 @@ router.post('/',async(req,res)=>{
  }); 
  router.post('/new-sale',async(req,res)=>{
     try{ 
-         const {orderDate,shopId,companyId,tax,amount,orderdBy,orders,deliveryDate,vanId}=req.body;  
-        var orderCount = await db.Order.count({where: {companyId:companyId}});
-        var status = 5;
-        var orderNo = orderCount+1; 
-        if(orders==null) return res.status(200).json({status:false,msg:'Order details not found!',value:null})
-        const details=await db.Order.create({orderNo,orderDate,companyId,shopId,tax,amount,orderdBy,status,deliveryDate,vanId});
-        if(details){
+
+        const {orderDate,shopId,companyId,tax,amount,orderdBy,orders,deliveryDate,vanId}=req.body;  
+        const result = await db.sequelize.transaction(async (t) => {
+            var orderCount = await db.Order.count({where: {companyId:companyId}});
+            var status = 5;
+            var orderNo = orderCount+1;  
+            const details=await db.Order.create({orderNo,orderDate,companyId,shopId,tax,amount,orderdBy,status,deliveryDate,vanId});  
+            var vstock = await db.VanStockRequest.bulkCreate({companyId:companyId,vanId:vanId,userId:orderdBy,allotted:true,sold:true});
             var stock = [];
             var array_copy = orders.map((element) => {  
-                const stockInfo = {companyId:companyId,vanId:vanId,productId:element.productId,requestedQty:0,userId:orderdBy,qty:(-1*element.orderdQty),allotted:true,sold:true};
+                const stockInfo = {vanStockRequestId:vstock.id,productId:element.productId,productName:"",requestedQty:element.orderdQty,qty:(-1*element.orderdQty),allotted:true,sold:true};
                 stock.push(stockInfo);
                 return {productId:element.productId, amount:element.amount, orderdQty:element.orderdQty,orderId:details.id,amount:element.price,deliverableQty:element.deliverableQty};
-              }); 
-            var od = await db.OrderDetail.bulkCreate(array_copy,{ returning: true})
-            if(!od){  
-                var od = await db.VanStock.bulkCreate(stock,{ returning: false}) 
-                res.status(200).json({status:false,msg:'Failed to save data!',value:null})
-            }
-            res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
-        }else 
+            }); 
+            await db.OrderDetail.bulkCreate(array_copy,{ returning: false})
+            await db.VanStockItem.bulkCreate(stock,{returning: false});
+            return details;
+        }); 
+        if(result)
+        {
+            res.status(201).json({status:true,msg:'Data saved successfully!',value:result});
+        }else
             res.status(200).json({status:false,msg:'Failed to save data!',value:null})
     }catch(err){
         console.log(err);

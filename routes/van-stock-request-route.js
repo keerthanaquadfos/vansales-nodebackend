@@ -70,7 +70,7 @@ router.post('/',async(req,res)=>{
             const lastItem = await db.VanStockRequest.findOne({where:{companyId:companyId, userId:userId}, order: [ [ 'id', 'DESC' ]]});
             var rNo =1;
             if(lastItem) rNo = (lastItem.requestNo+1);
-            const inserted=await db.VanStockRequest.create({requestNo:rNo,vanId:vanId,companyId: companyId,userId: userId, allotted:1});
+            const inserted=await db.VanStockRequest.create({requestNo:rNo,vanId:vanId,companyId: companyId,userId: userId, allotted:1, sold:false});
             var items = stockItems.map((e) => {  
                 return {vanStockRequestId:inserted.id,productId:e.productId,productName:e.productName,
                     requestedQty:e.requestedQty,qty:e.qty,allotted:false,sold:false};
