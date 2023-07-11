@@ -11,9 +11,9 @@ db.VanStockRequest.belongsTo(db.Van,{foreignKey:"vanId"});
 db.UserAccount.hasMany(db.VanStockRequest,{foreignKey:'userId'});
 db.VanStockRequest.belongsTo(db.UserAccount,{foreignKey:"userId"});
 
-router.get('/product-stock/:id/:companyId',async(req,res)=>{
+router.get('/product-stock/:companyId/:userId',async(req,res)=>{
     try{
-        const {id,companyId} = req.params;
+        const {companyId,userId} = req.params;
        
         const query ='SELECT "vans"."id" as "vanId", "vanStockItems"."productName",'+
         '"vanStockItems"."productId",SUM("vanStockItems"."qty") as "qty" '+
@@ -21,7 +21,7 @@ router.get('/product-stock/:id/:companyId',async(req,res)=>{
         'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId" '+
         'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId" '+
         'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId" '+
-        'WHERE "vanStockRequests"."companyId" =  ('+companyId+') AND "vanStockRequests"."userId"=  ('+id+') '+
+        'WHERE "vanStockRequests"."companyId" =  ('+companyId+') AND "vanStockRequests"."userId"=  ('+userId+') '+
         'GROUP BY "vans"."id","vanStockItems"."productId", "vanStockItems"."productName","vanStockItems"."productId"';
         const details = await db.sequelize.query(query ,{ 
             type: db.sequelize.QueryTypes.SELECT
