@@ -16,16 +16,16 @@ router.get('/product-stock/:id/:companyId',async(req,res)=>{
         const {id,companyId} = req.params;
        
         const query ='SELECT "vans"."id" as "vanId", "vanStockItems"."productName",'+
-        '"vanStockItems"."productId",SUM("vanStockItems"."qty") as "qty"'+
-        'FROM "vanStockRequests" LEFT JOIN "vanStockItems"'+
-        'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId"'+
-        'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId"'+
-        'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId"'+
-        'WHERE "vanStockRequests"."companyId" =  (:companyId) AND "vanStockRequests"."id"=  (:id)'+
+        '"vanStockItems"."productId",SUM("vanStockItems"."qty") as "qty "'+
+        'FROM "vanStockRequests" LEFT JOIN "vanStockItems "'+
+        'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId "'+
+        'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId "'+
+        'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId "'+
+        'WHERE "vanStockRequests"."companyId" =  (:companyId) AND "vanStockRequests"."userId"=  (:userId) '+
         'GROUP BY "vans"."id","vanStockItems"."productId",'+
         '"vanStockItems"."productName","vanStockItems"."productId"';
         const details = await db.sequelize.query(query ,{
-            replacements: {id: id, companyId:companyId},
+            replacements: {userId: id, companyId:companyId},
             type: db.sequelize.QueryTypes.SELECT
         });
         if(details){
