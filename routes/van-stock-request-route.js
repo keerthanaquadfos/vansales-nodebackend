@@ -21,10 +21,9 @@ router.get('/product-stock/:id/:companyId',async(req,res)=>{
         'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId" '+
         'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId" '+
         'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId" '+
-        'WHERE "vanStockRequests"."companyId" =  (:companyId) AND "vanStockRequests"."userId"=  (:userId) '+
+        'WHERE "vanStockRequests"."companyId" =  ('+companyId+') AND "vanStockRequests"."userId"=  ('+id+') '+
         'GROUP BY "vans"."id","vanStockItems"."productId", "vanStockItems"."productName","vanStockItems"."productId"';
-        const details = await db.sequelize.query(query ,{
-            replacements: {userId: id, companyId:companyId},
+        const details = await db.sequelize.query(query ,{ 
             type: db.sequelize.QueryTypes.SELECT
         });
         if(details){
