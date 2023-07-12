@@ -13,7 +13,7 @@ router.get('/company/:id',async(req,res)=>{
         }, 
         include:[ {model:db.Order, attributes: ['id','orderNo','amount','orderDate','tax'],
         include:[{model:db.Shop,attributes:['code','name']}]}],
-        order:[['orderId','DESC']]
+        order:[['voucherNo','DESC']]
     }) 
     if(details)  
          res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
