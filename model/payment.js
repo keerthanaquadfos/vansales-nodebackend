@@ -6,6 +6,9 @@ module.exports = (sequelize, Sequelize) => {
       voucherNo: {
         type: Sequelize.INTEGER
       }, 
+      voucherDate: {
+        type: Sequelize.DATE
+      } ,
       companyId: {
         type: Sequelize.INTEGER
       },
