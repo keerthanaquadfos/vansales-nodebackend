@@ -8,15 +8,11 @@ module.exports = (sequelize, Sequelize) => {
       },
       payed:{
         type: Sequelize.DECIMAL(9,2),
-        get() {
-          return parseFloat(this.getDataValue('amount')) || 0.0;
-        }
+        
       },
       balance:{
         type: Sequelize.DECIMAL(9,2),
-        get() {
-          return parseFloat(this.getDataValue('amount')) || 0.0;
-        }
+        
       }
     }); 
     return Payment;
