@@ -75,7 +75,8 @@ router.post('/',async(req,res)=>{
             var status = 5;
             var orderNo = orderCount+1;  
             const details=await db.Order.create({orderNo,orderDate,companyId,shopId,tax,amount,orderdBy,status,deliveryDate,vanId});  
-            const paymentInfo = await db.Payment.create({orderId:details.id,companyId:companyId,payed:payment, balance:balance});
+            var paymentCount = await db.Payment.count({where: {companyId:companyId}});
+            const paymentInfo = await db.Payment.create({ voucherNo:(paymentCount+1),orderId:details.id,companyId:companyId,payed:payment, balance:balance});
             var vstock = await db.VanStockRequest.bulkCreate({companyId:companyId,vanId:vanId,userId:orderdBy,allotted:true,sold:true});
             var stock = [];
             var array_copy = orders.map((element) => {  
