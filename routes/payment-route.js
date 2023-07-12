@@ -1,8 +1,8 @@
 const router = require('express').Router();    
 const db= require('../model'); 
 
-db.Payment.hasMany(db.Order,{foreignKey:'orderId'});
-db.Order.belongsTo(db.Payment,{foreignKey:"orderId"});
+db.Order.hasMany(db.Payment,{foreignKey:'orderId'});
+db.Payment.belongsTo(db.Order,{foreignKey:"orderId"});
 
 router.get('/company/:id',async(req,res)=>{
     try{    
@@ -11,7 +11,8 @@ router.get('/company/:id',async(req,res)=>{
         where:{
             companyId:id
         }, 
-        include:[ {model:db.Order, attributes: ['id','shopId','amount']}],
+        include:[ {model:db.Order, attributes: ['id','orderNo','amount','orderDate','tax'],
+        include:[{model:db.Shop,attributes:['code','name']}]}],
         order:[['orderId','DESC']]
     }) 
     if(details)  
