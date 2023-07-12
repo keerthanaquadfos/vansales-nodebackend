@@ -83,9 +83,9 @@ router.get('/:id',async(req,res)=>{
 router.post('/',async(req,res)=>{
     try{
        
-        const {companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt}=req.body; 
+        const {companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt,finalRemarks,productSerial}=req.body; 
         const no = await db.Complaint.count({where: {companyId:companyId}});
-        const details=await db.Complaint.create({code:(no+1),companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt});
+        const details=await db.Complaint.create({code:(no+1),companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt,finalRemarks,productSerial});
         if(details)
             res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
         else
@@ -95,27 +95,32 @@ router.post('/',async(req,res)=>{
          res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
     }
  }); 
-
- router.post('/',async(req,res)=>{
-    try{
-        const {companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt}=req.body; 
-        const details=await db.ComplaintType.create({companyId,complaintTypeId,shopId,productId,remarks,status,scheduledAt});
-        if(details)
-            res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
-        else
-            res.status(200).json({status:false,msg:'Failed to save data!',value:null})
-    }catch(err){
-        console.log(err);
-         res.status(500).json({status:false,msg:'Error occured while tring to save data!',value:err});
-    }
- }); 
-
+ 
  router.put('/:id',async(req,res)=>{
     try{ 
         const {id}=req.params;
-        const {complaintTypeId,shopId,productId,remarks,status,scheduledAt}=req.body; 
+        const {complaintTypeId,shopId,productId,remarks,status,scheduledAt,finalRemarks,productSerial}=req.body; 
         const details=await db.Complaint.update({
-            complaintTypeId,shopId,productId,remarks,status,scheduledAt
+            complaintTypeId,shopId,productId,remarks,status,scheduledAt,finalRemarks,productSerial
+        },{where:{id}}).catch((err)=>{
+            res.status(404).json({status:false,msg:'Failed to update details!',value:err})
+        });
+        if(details)
+            res.status(202).json({status:true,msg:'Data updated successfully!',value:details});
+        else
+            res.status(200).json({status:false,msg:'Failed to update data!',value:null})
+    }catch(err){
+         res.status(500).json({status:false,msg:'Error occured while tring to update data!',value:err});
+    }
+ });
+
+ router.patch('/:id',async(req,res)=>{
+    try{ 
+        const {id}=req.params;
+        const {finalRemarks,productSerial}=req.body; 
+        const status = 3;
+        const details=await db.Complaint.update({
+            finalRemarks,productSerial,status
         },{where:{id}}).catch((err)=>{
             res.status(404).json({status:false,msg:'Failed to update details!',value:err})
         });

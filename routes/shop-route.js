@@ -78,7 +78,10 @@ router.get('/:id',async(req,res)=>{
 
 router.post('/',async(req,res)=>{
     try{
-        const {name,address,contact,email,code,provinceId,routeId,billTypeId,companyId, trn}=req.body; 
+         
+        var {name,address,contact,email,code,provinceId,routeId,billTypeId,companyId, trn}=req.body; 
+        var shopCount = await db.Shop.count({where:{companyId:companyId}});
+        code = shopCount + 1;
         const details=await db.Shop.create({name,address,contact,email,code,provinceId,routeId,billTypeId,companyId,trn});
         if(details)
             res.status(201).json({status:true,msg:'Data saved successfully!',value:details});
