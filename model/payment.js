@@ -1,7 +1,7 @@
 module.exports = (sequelize, Sequelize) => {
     const Payment = sequelize.define("payment", { 
       orderId: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       }, 
       voucherNo: {
         type: Sequelize.INTEGER
