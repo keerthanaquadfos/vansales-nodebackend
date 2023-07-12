@@ -43,4 +43,5 @@ db.Company  = require("./company")(sequelize, Sequelize);
 db.VanUserRoute = require('./van-user-route')(sequelize,Sequelize);
 db.VanStockRequest = require('./van-stock-request')(sequelize,Sequelize);
 db.VanStockItem = require('./van-stock-item')(sequelize,Sequelize);
+db.Payment =  require('./payment')(sequelize,Sequelize);
 module.exports = db;

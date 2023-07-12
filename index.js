@@ -46,6 +46,7 @@ const designationRoute = require('./routes/designation-route');
 const billTypeRoute = require('./routes/bill-type-route');
 const routeInfoRoute = require('./routes/route-info-route');  
 const stockRequestRoute = require('./routes/van-stock-request-route');  
+const paymentRoute = require('./routes/payment-route');  
 
 app.use('/api/v1/user', userRoute);  
 app.use('/api/v1/country', countryRoute); 
@@ -69,7 +70,7 @@ app.use('/api/v1/designation', designationRoute);
 app.use('/api/v1/billtype', billTypeRoute); 
 app.use('/api/v1/route-info', routeInfoRoute); 
 app.use('/api/v1/stock-request', stockRequestRoute); 
-
+app.use('/api/v1/payment', paymentRoute); 
 const PORT=process.env.PORT||3000; 
 
 app.listen(PORT,()=>console.log(`Server is running on port ${PORT}`));

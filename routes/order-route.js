@@ -69,12 +69,13 @@ router.post('/',async(req,res)=>{
  router.post('/new-sale',async(req,res)=>{
     try{ 
 
-        const {orderDate,shopId,companyId,tax,amount,orderdBy,orders,deliveryDate,vanId}=req.body;  
+        const {orderDate,shopId,companyId,tax,amount,orderdBy,orders,deliveryDate,vanId,payment,balance}=req.body;  
         const result = await db.sequelize.transaction(async (t) => {
-            var orderCount = await db.Order.count({where: {companyId:companyId}});
+            var orderCount = await db.Order.count({where: {companyId:companyId, status:5}});
             var status = 5;
             var orderNo = orderCount+1;  
             const details=await db.Order.create({orderNo,orderDate,companyId,shopId,tax,amount,orderdBy,status,deliveryDate,vanId});  
+            const paymentInfo = await db.Payment.create({orderId:details.id,companyId:companyId,payed:payment, balance:balance});
             var vstock = await db.VanStockRequest.bulkCreate({companyId:companyId,vanId:vanId,userId:orderdBy,allotted:true,sold:true});
             var stock = [];
             var array_copy = orders.map((element) => {  
@@ -84,7 +85,7 @@ router.post('/',async(req,res)=>{
             }); 
             await db.OrderDetail.bulkCreate(array_copy,{ returning: false})
             await db.VanStockItem.bulkCreate(stock,{returning: false});
-            return details;
+            return {id:details.id,orderNo:orderNo,recieptNo:paymentInfo.id};
         }); 
         if(result)
         {
