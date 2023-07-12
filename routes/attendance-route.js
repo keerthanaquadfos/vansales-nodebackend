@@ -26,7 +26,7 @@ router.get('/company/:id',async(req,res)=>{
     try{    
         const {id} =req.params;   
         const details=await db.Attendance.findAll({
-            include:[ {model:db.UserAccount, attributes: ['id','email'], where:{companyId:id}}],
+            include:[ {model:db.UserAccount, attributes: ['id','email','name'], where:{companyId:id}}],
             order:[['createdAt','DESC']]
         }) ;
         if(details)  
