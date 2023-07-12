@@ -2,6 +2,7 @@ const router = require('express').Router();
 const db= require('../model'); 
 const Sequelize=require('sequelize');  
 const moment = require('moment'); 
+const order = require('../model/order');
 const Op = Sequelize.Op;
 db.UserAccount.hasMany(db.Attendance,{foreignKey:'employeeId'});
 db.Attendance.belongsTo(db.UserAccount,{foreignKey:"employeeId"});
@@ -18,6 +19,23 @@ router.get('/',async(req,res)=>{
     }catch(err){
      console.log(err);
          res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+});
+
+router.get('/company/:id',async(req,res)=>{
+    try{    
+        const {id} =req.params;   
+        const details=await db.Attendance.findAll({
+            include:[ {model:db.UserAccount, attributes: ['id','email'], where:{companyId:id}}],
+            order:[['createdAt','DESC']]
+        }) ;
+        if(details)  
+            res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+        else
+            res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+        console.log(err);
+        res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
     }
 });
 
