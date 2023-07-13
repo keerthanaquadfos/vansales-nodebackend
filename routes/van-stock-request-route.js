@@ -36,31 +36,7 @@ router.get('/product-stock/:companyId/:userId',async(req,res)=>{
     }
 })
 
-router.get('/product-stock/:companyId',async(req,res)=>{
-    try{
-        const {companyId} = req.params;
-       
-        const query ='SELECT "vans"."id" as "vanId", "vanStockItems"."productName",'+
-        '"vanStockItems"."productId",SUM("vanStockItems"."qty") as "qty" '+
-        'FROM "vanStockRequests" LEFT JOIN "vanStockItems" '+
-        'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId" '+
-        'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId" '+
-        'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId" '+
-        'WHERE "vanStockRequests"."companyId" =  ('+companyId+') '+
-        'GROUP BY "vans"."id","vanStockItems"."productId", "vanStockItems"."productName","vanStockItems"."productId"';
-        const details = await db.sequelize.query(query ,{ 
-            type: db.sequelize.QueryTypes.SELECT
-        });
-        if(details){
-            res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
-       }else
-            res.status(200).json({status:false,msg:'No details found!',value:null})
-    }catch(err){
-        console.log(err);
-        res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
-    }
-})
-
+ 
 
 router.get('/company/:id/:userId',async(req,res)=>{
     try{   
@@ -87,11 +63,35 @@ router.get('/company/:id/:userId',async(req,res)=>{
     }
  });
   
+ router.get('/company/:id',async(req,res)=>{
+    try{   
+     const {id, userId} =req.params;  
+     const details=await db.VanStockRequest.findAll({
+        where:{
+            companyId:id, sold:false
+        },
+        include:[{model:db.VanStockItem, group: ['productId'], attributes:['id','vanStockRequestId','productId','productName','requestedQty', 
+        'qty','allotted','sold']},
+        {model:db.Van, attributes:['code','name']},
+        {model:db.UserAccount, attributes:['name','email']}],
+        attributes:['id','requestNo','allotted','companyId','userId','vanId'] , order:[['requestNo','DESC']] 
+    }) ;
+
+    if(details){
+         res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+    }else
+         res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+        console.log(err);
+         res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+ });
+
 router.post('/',async(req,res)=>{ 
     try{
         const {vanId, companyId, userId, stockItems}=req.body;  
         const result = await db.sequelize.transaction(async (t) => {
-            const lastItem = await db.VanStockRequest.findOne({where:{companyId:companyId, userId:userId}, order: [ [ 'id', 'DESC' ]]});
+            const lastItem = await db.VanStockRequest.findOne({where:{companyId:companyId}, order: [ [ 'id', 'DESC' ]]});
             var rNo =1;
             if(lastItem) rNo = (lastItem.requestNo+1);
             const inserted=await db.VanStockRequest.create({requestNo:rNo,vanId:vanId,companyId: companyId,userId: userId, allotted:1, sold:false});
