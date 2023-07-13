@@ -36,6 +36,32 @@ router.get('/product-stock/:companyId/:userId',async(req,res)=>{
     }
 })
 
+router.get('/product-stock/:companyId',async(req,res)=>{
+    try{
+        const {companyId} = req.params;
+       
+        const query ='SELECT "vans"."id" as "vanId", "vanStockItems"."productName",'+
+        '"vanStockItems"."productId",SUM("vanStockItems"."qty") as "qty" '+
+        'FROM "vanStockRequests" LEFT JOIN "vanStockItems" '+
+        'ON "vanStockRequests"."id" = "vanStockItems"."vanStockRequestId" '+
+        'LEFT OUTER JOIN vans ON vans.id = "vanStockRequests"."vanId" '+
+        'LEFT OUTER JOIN useraccounts ON useraccounts.id = "vanStockRequests"."userId" '+
+        'WHERE "vanStockRequests"."companyId" =  ('+companyId+') '+
+        'GROUP BY "vans"."id","vanStockItems"."productId", "vanStockItems"."productName","vanStockItems"."productId"';
+        const details = await db.sequelize.query(query ,{ 
+            type: db.sequelize.QueryTypes.SELECT
+        });
+        if(details){
+            res.status(200).json({status:true,msg:`${details.length} details found!`,value:details});
+       }else
+            res.status(200).json({status:false,msg:'No details found!',value:null})
+    }catch(err){
+        console.log(err);
+        res.status(500).json({status:false,msg:'Error occured while tring to fetch data!',value:err});
+    }
+})
+
+
 router.get('/company/:id/:userId',async(req,res)=>{
     try{   
      const {id, userId} =req.params;  
